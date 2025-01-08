@@ -6,6 +6,42 @@
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
+  padding: 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  color: white;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.hamburger {
+  display: none; /* Hidden by default */
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.hamburger div {
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  margin: 4px 0;
 }
 
 /* Hero Section */
@@ -19,7 +55,7 @@
   overflow: hidden;
 }
 
-/* YouTube Embed Styling */
+/* Video Styling */
 .background-video {
   position: absolute;
   top: 0;
@@ -47,35 +83,38 @@
   z-index: 3; /* Content above overlay and video */
   color: white;
   text-align: center;
+  padding: 0 1rem;
 }
 
 .hero-content h1 {
-  font-size: 3rem;
+  font-size: 2.5rem;
   margin-bottom: 1rem;
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .hero-content p {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   margin-bottom: 2rem;
   color: white;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .cta-button {
-  background-color: royalblue;
-  color: white;
+  background-color: #ffc107; /* Yellow */
+  color: #000; /* Black text */
   border: none;
   padding: 1rem 2rem;
-  font-size: 1.2rem;
+  font-size: 1rem;
   cursor: pointer;
   border-radius: 5px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .cta-button:hover {
-  background-color: orange;
+  background-color: #000; /* Black */
+  color: #ffc107; /* Yellow text */
+  transform: scale(1.05); /* Slight zoom effect */
 }
 
 /* Modal */
@@ -98,12 +137,13 @@
   border-radius: 10px;
   text-align: center;
   max-width: 400px;
-  width: 100%;
+  width: 90%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .modal-content h2 {
   margin-bottom: 1.5rem;
-  color: royalblue;
+  color: #ffc107; /* Yellow */
 }
 
 .modal-content ul {
@@ -116,13 +156,14 @@
 }
 
 .modal-content ul li a {
-  color: royalblue;
+  color: #000; /* Black text */
   text-decoration: none;
-  font-size: 1.2rem;
+  font-size: 1rem;
+  transition: color 0.3s ease;
 }
 
 .modal-content ul li a:hover {
-  color: orange;
+  color: #ffc107; /* Yellow */
 }
 
 /* Bee-themed ConnectHive Button */
@@ -132,7 +173,7 @@
   padding: 0.5rem 1rem;
   border-radius: 5px;
   display: inline-block;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .modal-content ul li a[href="/connecthive"]:hover {
@@ -141,18 +182,20 @@
 }
 
 .close-modal {
-  background-color: royalblue;
-  color: white;
+  background-color: #ffc107; /* Yellow */
+  color: #000; /* Black text */
   border: none;
   padding: 0.5rem 1rem;
   font-size: 1rem;
   cursor: pointer;
   border-radius: 5px;
   margin-top: 1rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .close-modal:hover {
-  background-color: orange;
+  background-color: #000; /* Black */
+  color: #ffc107; /* Yellow text */
 }
 
 /* Blog Section */
@@ -164,6 +207,7 @@
 .blog-grid {
   display: flex;
   gap: 2rem;
+  flex-wrap: wrap;
 }
 
 .blog-column {
@@ -172,10 +216,11 @@
   padding: 1rem;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 250px;
 }
 
 .blog-column h3 {
-  color: royalblue;
+  color: #ffc107; /* Yellow */
   margin-bottom: 1rem;
 }
 
@@ -191,7 +236,7 @@
 
 .blog-card h4 {
   margin: 0.5rem 0;
-  color: royalblue;
+  color: #ffc107; /* Yellow */
 }
 
 .blog-card p {
@@ -201,6 +246,14 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .header h1 {
+    font-size: 1.2rem;
+  }
+
+  .hamburger {
+    display: flex; /* Show hamburger menu on mobile */
+  }
+
   .hero-content h1 {
     font-size: 2rem;
   }
@@ -212,4 +265,26 @@
   .blog-grid {
     flex-direction: column;
   }
+
+  .modal-content {
+    width: 100%;
+    padding: 1rem;
+  }
+}
+
+/* Bee-themed Animations */
+@keyframes buzz {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.bee-theme-link {
+  animation: buzz 0.5s infinite;
 }

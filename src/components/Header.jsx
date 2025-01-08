@@ -24,14 +24,31 @@ const Header = () => {
           <li><Link to="/marketplace">Marketplace</Link></li>
           <li><Link to="/podcast">Podcast</Link></li>
           <li><Link to="/learninghub">LearningHub</Link></li>
-          <li><Link to="/connecthive">ConnectHive</Link></li> {/* Updated to ConnectHive */}
+          <li>
+            <Link to="/connecthive" className="bee-theme-link">
+              ConnectHive
+            </Link>
+          </li>
           <li><Link to="/admin">Dashboard</Link></li>
-          <li><Link to="/login">Login</Link></li>
-          <li><Link to="/signup">Sign Up</Link></li>
+          <li>
+            <Link to="/login" className="login-button">
+              Login
+            </Link>
+          </li>
+          <li>
+            <Link to="/signup" className="signup-button">
+              Sign Up
+            </Link>
+          </li>
         </ul>
 
         {/* Hamburger Menu */}
-        <button className="hamburger-menu" aria-label="Menu" onClick={toggleMenu}>
+        <button
+          className="hamburger-menu"
+          aria-label="Menu"
+          aria-expanded={isMenuOpen}
+          onClick={toggleMenu}
+        >
           ☰
         </button>
       </nav>

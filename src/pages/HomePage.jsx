@@ -33,20 +33,23 @@ const HomePage = () => {
 
   return (
     <div className="homepage-container">
+      {/* Header */}
+      <div className="header">
+        <h1>Enky Solutions</h1>
+        <div className="hamburger" onClick={toggleModal}>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+
       {/* Hero Section */}
       <div className="hero-section">
-        {/* YouTube Embed */}
-        <iframe
-          width="560"
-          height="315"
-          src="https://www.youtube.com/embed/Ga3-OdwDTw8?si=uksD7X0Sk2f2J83P"
-          title="YouTube video player"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allowfullscreen
-          className="background-video"
-        ></iframe>
+        {/* Video from Public Folder */}
+        <video autoPlay loop muted className="background-video">
+          <source src="/background.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
         <div className="video-overlay"></div>
         <div className="hero-content">
           <h1>Welcome to Enky Solutions</h1>
@@ -59,8 +62,8 @@ const HomePage = () => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
+        <div className="modal-overlay" onClick={toggleModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h2>Where would you like to go?</h2>
             <ul>
               <li>
@@ -79,7 +82,7 @@ const HomePage = () => {
                 </a>
               </li>
               <li>
-                <a href="/connecthive" onClick={toggleModal}>
+                <a href="/connecthive" onClick={toggleModal} className="bee-theme-link">
                   ConnectHive
                 </a>
               </li>
