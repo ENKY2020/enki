@@ -19,7 +19,7 @@
   overflow: hidden;
 }
 
-/* Video Background */
+/* YouTube Embed Styling */
 .background-video {
   position: absolute;
   top: 0;
@@ -125,6 +125,21 @@
   color: orange;
 }
 
+/* Bee-themed ConnectHive Button */
+.modal-content ul li a[href="/connecthive"] {
+  background-color: #ffc107; /* Yellow */
+  color: #000; /* Black text */
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  display: inline-block;
+  transition: background-color 0.3s ease;
+}
+
+.modal-content ul li a[href="/connecthive"]:hover {
+  background-color: #000; /* Black */
+  color: #ffc107; /* Yellow text */
+}
+
 .close-modal {
   background-color: royalblue;
   color: white;
@@ -140,16 +155,7 @@
   background-color: orange;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .hero-content h1 {
-    font-size: 2rem;
-  }
-
-  .hero-content p {
-    font-size: 1rem;
-  }
-}
+/* Blog Section */
 .blog-section {
   padding: 2rem;
   background-color: #f9f9f9;
@@ -191,4 +197,19 @@
 .blog-card p {
   margin: 0.5rem 0;
   color: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+  }
+
+  .blog-grid {
+    flex-direction: column;
+  }
 }
