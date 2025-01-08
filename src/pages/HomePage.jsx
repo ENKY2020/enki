@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 import "../styles/homepage.css";
 import supabase from "../supabaseClient"; // Import Supabase client
+import Header from "../components/Header"; // Import the Header component
 
 const HomePage = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -33,20 +35,13 @@ const HomePage = () => {
 
   return (
     <div className="homepage-container">
-      {/* Header */}
-      <div className="header">
-        <h1>Enky Solutions</h1>
-        <div className="hamburger" onClick={toggleModal}>
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
-      </div>
+      {/* Header Component */}
+      <Header />
 
       {/* Hero Section */}
       <div className="hero-section">
         {/* Video from Public Folder */}
-        <video autoPlay loop muted className="background-video">
+        <video autoPlay loop muted playsInline className="background-video">
           <source src="/background.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
@@ -67,24 +62,24 @@ const HomePage = () => {
             <h2>Where would you like to go?</h2>
             <ul>
               <li>
-                <a href="/services" onClick={toggleModal}>
+                <Link to="/services" onClick={toggleModal}>
                   Explore Services
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/marketplace" onClick={toggleModal}>
+                <Link to="/marketplace" onClick={toggleModal}>
                   View Marketplace
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/learninghub" onClick={toggleModal}>
+                <Link to="/learninghub" onClick={toggleModal}>
                   Start Learning
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/connecthive" onClick={toggleModal} className="bee-theme-link">
+                <Link to="/connecthive" onClick={toggleModal} className="bee-theme-link">
                   ConnectHive
-                </a>
+                </Link>
               </li>
             </ul>
             <button className="close-modal" onClick={toggleModal}>
