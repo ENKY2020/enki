@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
 import "../styles/homepage.css";
 import supabase from "../supabaseClient"; // Import Supabase client
-import Header from "../components/Header"; // Import the Header component
 
 const HomePage = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -35,13 +33,9 @@ const HomePage = () => {
 
   return (
     <div className="homepage-container">
-      {/* Header Component */}
-      <Header />
-
       {/* Hero Section */}
       <div className="hero-section">
-        {/* Video from Public Folder */}
-        <video autoPlay loop muted playsInline className="background-video">
+        <video autoPlay loop muted className="background-video">
           <source src="/background.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
@@ -57,29 +51,29 @@ const HomePage = () => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="modal-overlay" onClick={toggleModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay">
+          <div className="modal-content">
             <h2>Where would you like to go?</h2>
             <ul>
               <li>
-                <Link to="/services" onClick={toggleModal}>
+                <a href="/services" onClick={toggleModal}>
                   Explore Services
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/marketplace" onClick={toggleModal}>
+                <a href="/marketplace" onClick={toggleModal}>
                   View Marketplace
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/learninghub" onClick={toggleModal}>
+                <a href="/learninghub" onClick={toggleModal}>
                   Start Learning
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/connecthive" onClick={toggleModal} className="bee-theme-link">
+                <a href="/connecthive" onClick={toggleModal}>
                   ConnectHive
-                </Link>
+                </a>
               </li>
             </ul>
             <button className="close-modal" onClick={toggleModal}>
@@ -96,42 +90,68 @@ const HomePage = () => {
           {/* Special Promotions */}
           <div className="blog-column">
             <h3>Special Promotions</h3>
-            {groupedPosts['Special Promotions']?.map((post) => (
-              <div className="blog-card" key={post.id}>
-                <img src={post.image_url} alt={post.title} className="blog-img" />
-                <h4>{post.title}</h4>
-                <p>{post.content}</p>
-              </div>
-            ))}
+            <div className="blog-card">
+              <img src="20-percent-off.png" alt="Special Promotions" className="blog-img" />
+              <h4><strong>Exclusive Launch Week Discounts: Save Big on ICT Solutions!</strong></h4>
+              <p>
+                To celebrate the launch of Enki_WebApp, we’re offering exclusive discounts on our top services! Whether you’re looking for cutting-edge web development solutions, IT consulting, or professional CV services, now is the perfect time to invest in your business.
+                <br /><br />
+                🎉 Special Offers:
+                <ul>
+                  <li>20% off on all ICT consulting services.</li>
+                  <li>Free adding of your products on the marketplace platform.</li>
+                  <li>Discounts on numerous purchases.</li>
+                </ul>
+                Don’t miss out—these offers are valid only for the first week!
+                <br /><br />
+                <strong>Call to Action:</strong> 👉 <a href="/services">Explore Services</a>
+              </p>
+            </div>
           </div>
 
           {/* Breaking News */}
           <div className="blog-column">
             <h3>Breaking News</h3>
-            {groupedPosts['Breaking News']?.map((post) => (
-              <div className="blog-card" key={post.id}>
-                <img src={post.image_url} alt={post.title} className="blog-img" />
-                <h4>{post.title}</h4>
-                <p>{post.content}</p>
-              </div>
-            ))}
+            <div className="blog-card">
+              <img src="robot-cafe.jpg" alt="Breaking News" className="blog-img" />
+              <h4>Nairobi Ranked Among Top Tech Hubs in Africa!</h4>
+              <p>
+                Nairobi has been recognized as one of the leading tech hubs in Africa, according to a recent report by the African Tech Foundation. The city’s thriving startup ecosystem, coupled with its innovative ICT infrastructure, has positioned it as a key player in the continent’s digital transformation.
+                <br /><br />
+                🌟 Key Highlights:
+                <ul>
+                  <li>Nairobi is home to over 200 tech startups.</li>
+                  <li>The city has seen a 30% increase in tech investments in the past year.</li>
+                  <li>Major global companies are setting up offices in Nairobi, creating thousands of jobs.</li>
+                </ul>
+                <strong>Call to Action:</strong> 👉 <a href="/nairobi-tech-scene">Learn More About Nairobi’s Tech Scene</a>
+              </p>
+            </div>
           </div>
 
           {/* Trending Topics */}
           <div className="blog-column">
             <h3>Trending Topics</h3>
-            {groupedPosts['Trending Topics']?.map((post) => (
-              <div className="blog-card" key={post.id}>
-                <img src={post.image_url} alt={post.title} className="blog-img" />
-                <h4>{post.title}</h4>
-                <p>{post.content}</p>
-              </div>
-            ))}
+            <div className="blog-card">
+              <img src="tech-bee.jpg" alt="Trending Topics" className="blog-img" />
+              <h4>AI in Africa: How Artificial Intelligence is Transforming Industries</h4>
+              <p>
+                Artificial Intelligence (AI) is no longer a futuristic concept—it’s here, and it’s transforming industries across Africa. From healthcare to agriculture, AI is driving innovation and solving real-world problems.
+                <br /><br />
+                🚀 Trending Applications:
+                <ul>
+                  <li>Healthcare: AI-powered diagnostics are improving patient outcomes.</li>
+                  <li>Agriculture: Smart farming tools are boosting crop yields.</li>
+                  <li>Finance: AI is revolutionizing fraud detection and customer service.</li>
+                </ul>
+                <strong>Call to Action:</strong> 👉 <a href="/ai-benefits">Discover How AI Can Benefit Your Business</a>
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </div> // Closing div for homepage-container
   );
 };
 
-export default HomePage;
+export default HomePage; // Correct placement of export statement

@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import "../styles/header.css"; // Separate CSS file for header styling
+import "../styles/header.css"; // Ensure this CSS file is updated
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Track menu state
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Toggle the menu visibility
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -17,7 +16,6 @@ const Header = () => {
           <h1>Enki_WebApp</h1>
         </div>
 
-        {/* Conditionally render the nav-list based on the state of the menu */}
         <ul className={`nav-list ${isMenuOpen ? "active" : ""}`}>
           <li><Link to="/">Home</Link></li>
           <li><Link to="/services">Services</Link></li>
@@ -42,7 +40,6 @@ const Header = () => {
           </li>
         </ul>
 
-        {/* Hamburger Menu */}
         <button
           className="hamburger-menu"
           aria-label="Menu"

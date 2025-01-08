@@ -108,25 +108,62 @@ const AdminDashboard = () => {
     const file = event.target.files[0];
     if (!file) return;
 
-    const { data, error } = await supabase.storage
-      .from('blog-images')
-      .upload(`blog/${file.name}`, file);
+    try {
+      console.log('Uploading image to Supabase Storage...');
+      const { data, error } = await supabase.storage
+        .from('blog-images') // Replace with your bucket name
+        .upload(`blog/${file.name}`, file);
 
-    if (error) {
-      console.error('Error uploading image:', error);
-    } else {
-      setNewPost({ ...newPost, image_url: data.path });
+      if (error) {
+        console.error('Error uploading image:', error);
+        alert('Failed to upload image. Please try again.');
+      } else {
+        console.log('Image uploaded successfully:', data.path);
+        const imageUrl = supabase.storage.from('blog-images').getPublicUrl(data.path).data.publicUrl;
+        setNewPost({ ...newPost, image_url: imageUrl });
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      alert('An unexpected error occurred. Please try again.');
     }
   };
 
   // Add a new blog post
   const handleAddBlogPost = async () => {
-    const { data, error } = await supabase.from('blog_posts').insert([newPost]).select();
-    if (error) {
-      console.error('Error adding blog post:', error);
-    } else {
-      setBlogPosts([...blogPosts, data[0]]);
-      setNewPost({ title: '', content: '', image_url: '', category: '' }); // Reset form
+    console.log('Attempting to add a new blog post...');
+
+    // Check if required fields are filled
+    if (!newPost.title || !newPost.content || !newPost.category) {
+      console.error('Missing required fields:', {
+        title: newPost.title,
+        content: newPost.content,
+        category: newPost.category,
+      });
+      alert('Please fill in all fields (Title, Content, and Category).');
+      return;
+    }
+
+    console.log('New post data:', newPost);
+
+    try {
+      console.log('Inserting new blog post into Supabase...');
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .insert([newPost])
+        .select();
+
+      if (error) {
+        console.error('Error adding blog post:', error);
+        alert('Failed to add blog post. Please try again.');
+      } else {
+        console.log('Blog post added successfully:', data[0]);
+        setBlogPosts([...blogPosts, data[0]]); // Add the new post to the list
+        setNewPost({ title: '', content: '', image_url: '', category: '' }); // Reset the form
+        alert('Blog post added successfully!');
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+      alert('An unexpected error occurred. Please try again.');
     }
   };
 
@@ -240,7 +277,7 @@ const AdminDashboard = () => {
               value={newPost.content}
               onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
             />
-            <input type="file" onChange={handleImageUpload} />
+            <input type="file" onChange={handleImageUpload} accept="image/*" />
             <select
               value={newPost.category}
               onChange={(e) => setNewPost({ ...newPost, category: e.target.value })}
@@ -264,7 +301,9 @@ const AdminDashboard = () => {
                 <li key={post.id} className="blog-card">
                   <h3>{post.title}</h3>
                   <p>{post.content}</p>
-                  <img src={post.image_url} alt={post.title} className="blog-img" />
+                  {post.image_url && (
+                    <img src={post.image_url} alt={post.title} className="blog-img" />
+                  )}
                   <p>Category: {post.category}</p>
                   <button onClick={() => handleDeleteBlogPost(post.id)}>Delete</button>
                 </li>
