@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import "../styles/header.css"; // Ensure this CSS file is updated
+import "../styles/header.css";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
   };
 
   return (
@@ -17,24 +21,24 @@ const Header = () => {
         </div>
 
         <ul className={`nav-list ${isMenuOpen ? "active" : ""}`}>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/services">Services</Link></li>
-          <li><Link to="/marketplace">Marketplace</Link></li>
-          <li><Link to="/podcast">Podcast</Link></li>
-          <li><Link to="/learninghub">LearningHub</Link></li>
+          <li><Link to="/" onClick={closeMenu}>Home</Link></li>
+          <li><Link to="/services" onClick={closeMenu}>Services</Link></li>
+          <li><Link to="/marketplace" onClick={closeMenu}>Marketplace</Link></li>
+          <li><Link to="/podcast" onClick={closeMenu}>Podcast</Link></li>
+          <li><Link to="/learninghub" onClick={closeMenu}>LearningHub</Link></li>
           <li>
-            <Link to="/connecthive" className="bee-theme-link">
+            <Link to="/connecthive" className="bee-theme-link" onClick={closeMenu}>
               ConnectHive
             </Link>
           </li>
-          <li><Link to="/admin">Dashboard</Link></li>
+          <li><Link to="/admin" onClick={closeMenu}>Dashboard</Link></li>
           <li>
-            <Link to="/login" className="login-button">
+            <Link to="/login" className="login-button" onClick={closeMenu}>
               Login
             </Link>
           </li>
           <li>
-            <Link to="/signup" className="signup-button">
+            <Link to="/signup" className="signup-button" onClick={closeMenu}>
               Sign Up
             </Link>
           </li>
@@ -46,7 +50,7 @@ const Header = () => {
           aria-expanded={isMenuOpen}
           onClick={toggleMenu}
         >
-          ☰
+          {isMenuOpen ? "✖" : "☰"}
         </button>
       </nav>
     </header>
