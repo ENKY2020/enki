@@ -28,11 +28,12 @@
 /* Video Styling */
 .background-video {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 50%;
+  left: 50%;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: translate(-50%, -50%);
   z-index: 1; /* Video on top */
 }
 
@@ -54,6 +55,8 @@
   color: white;
   text-align: center;
   padding: 0 1rem;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .hero-content h1 {
@@ -169,6 +172,7 @@
   background-color: #000; /* Black */
   color: #ffc107; /* Yellow text */
 }
+
 /* Blog Section */
 .blog-section {
   padding: 2rem;
@@ -179,15 +183,17 @@
   display: flex;
   gap: 2rem;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .blog-column {
-  flex: 1;
+  flex: 1 1 calc(33.333% - 2rem); /* Three columns with gap */
   background-color: white;
   padding: 1rem;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   min-width: 250px;
+  max-width: 350px; /* Limit max width for larger screens */
 }
 
 .blog-column h3 {
@@ -214,6 +220,7 @@
   margin: 0.5rem 0;
   color: #555;
 }
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .hero-content h1 {
@@ -226,11 +233,32 @@
 
   .blog-grid {
     flex-direction: column;
+    align-items: center;
+  }
+
+  .blog-column {
+    flex: 1 1 100%; /* Full width on smaller screens */
+    max-width: 100%;
   }
 
   .modal-content {
     width: 100%;
     padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .hero-content p {
+    font-size: 0.9rem;
+  }
+
+  .cta-button {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
   }
 }
 

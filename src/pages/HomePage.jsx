@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import "../styles/homepage.css";
 import supabase from "../supabaseClient"; // Import Supabase client
 
@@ -56,24 +57,24 @@ const HomePage = () => {
             <h2>Where would you like to go?</h2>
             <ul>
               <li>
-                <a href="/services" onClick={toggleModal}>
+                <Link to="/services" onClick={toggleModal}>
                   Explore Services
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/marketplace" onClick={toggleModal}>
+                <Link to="/marketplace" onClick={toggleModal}>
                   View Marketplace
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/learninghub" onClick={toggleModal}>
+                <Link to="/learninghub" onClick={toggleModal}>
                   Start Learning
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/connecthive" onClick={toggleModal}>
+                <Link to="/connecthive" onClick={toggleModal}>
                   ConnectHive
-                </a>
+                </Link>
               </li>
             </ul>
             <button className="close-modal" onClick={toggleModal}>
@@ -104,7 +105,7 @@ const HomePage = () => {
                 </ul>
                 Don’t miss out—these offers are valid only for the first week!
                 <br /><br />
-                <strong>Call to Action:</strong> 👉 <a href="/services">Explore Services</a>
+                <strong>Call to Action:</strong> 👉 <Link to="/services">Explore Services</Link>
               </p>
             </div>
           </div>
@@ -124,7 +125,7 @@ const HomePage = () => {
                   <li>The city has seen a 30% increase in tech investments in the past year.</li>
                   <li>Major global companies are setting up offices in Nairobi, creating thousands of jobs.</li>
                 </ul>
-                <strong>Call to Action:</strong> 👉 <a href="/nairobi-tech-scene">Learn More About Nairobi’s Tech Scene</a>
+                <strong>Call to Action:</strong> 👉 <Link to="/nairobi-tech-scene">Learn More About Nairobi’s Tech Scene</Link>
               </p>
             </div>
           </div>
@@ -144,13 +145,13 @@ const HomePage = () => {
                   <li>Agriculture: Smart farming tools are boosting crop yields.</li>
                   <li>Finance: AI is revolutionizing fraud detection and customer service.</li>
                 </ul>
-                <strong>Call to Action:</strong> 👉 <a href="/ai-benefits">Discover How AI Can Benefit Your Business</a>
+                <strong>Call to Action:</strong> 👉 <Link to="/ai-benefits">Discover How AI Can Benefit Your Business</Link>
               </p>
             </div>
           </div>
         </div>
       </div>
-    </div> // Closing div for homepage-container
+    </div> // Correctly placed closing div for homepage-container
   );
 };
 
