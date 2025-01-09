@@ -22,6 +22,7 @@ const HomePage = () => {
   }, []);
 
   const toggleModal = () => {
+    console.log("Toggle Modal Called. Current State:", isModalOpen); // Debugging
     setModalOpen(!isModalOpen);
   };
 
@@ -38,6 +39,8 @@ const HomePage = () => {
       <div className="hero-section">
         <video autoPlay loop muted className="background-video">
           <source src="/background.mp4" type="video/mp4" />
+          <source src="/background.webm" type="video/webm" />
+          <source src="/background.ogv" type="video/ogg" />
           Your browser does not support the video tag.
         </video>
         <div className="video-overlay"></div>
@@ -151,8 +154,8 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-    </div> // Correctly placed closing div for homepage-container
+    </div>
   );
 };
 
-export default HomePage; // Correct placement of export statement
+export default HomePage;
