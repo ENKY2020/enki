@@ -30,6 +30,9 @@ h1 {
   font-size: 2.5rem;
   margin-bottom: 10px;
   color: #ff6f00;
+  background: linear-gradient(90deg, #ff6f00, #ffa040);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 h2 {
@@ -38,6 +41,8 @@ h2 {
   margin-bottom: 20px;
   color: #ff6f00;
 }
+
+/* Promo Banner */
 
 /* Promo Banner */
 .promo-banner {
@@ -49,6 +54,12 @@ h2 {
   border-radius: 8px;
   font-weight: bold;
   font-size: 1.2rem;
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
+                    linear-gradient(225deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
+                    linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
+                    linear-gradient(315deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%);
+  background-size: 20px 20px;
+  background-blend-mode: overlay;
 }
 
 /* Shop Buttons */
@@ -69,11 +80,13 @@ h2 {
   font-size: 1rem;
   font-family: 'Lora', serif;
   transition: background-color 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .shop-btn:hover {
   background-color: #e65c00;
   transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Search Filters */
@@ -112,6 +125,9 @@ h2 {
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-image: url('honeycomb-pattern.png'); /* Add a honeycomb pattern */
+  background-size: cover;
+  background-blend-mode: overlay;
 }
 
 .browse-categories h3 {
@@ -177,6 +193,9 @@ h2 {
   background-color: #fff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-image: url('honeycomb-pattern.png'); /* Add a honeycomb pattern */
+  background-size: cover;
+  background-blend-mode: overlay;
 }
 
 .product-card:hover {
@@ -221,6 +240,9 @@ h2 {
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-image: url('honeycomb-pattern.png'); /* Add a honeycomb pattern */
+  background-size: cover;
+  background-blend-mode: overlay;
 }
 
 .add-product-form h3 {
@@ -291,7 +313,10 @@ h2 {
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  color: #333; /* Ensure text is visible */
+  color: #333;
+  background-image: url('honeycomb-pattern.png'); /* Add a honeycomb pattern */
+  background-size: cover;
+  background-blend-mode: overlay;
 }
 
 .checkout-modal h3 {
@@ -302,7 +327,7 @@ h2 {
 
 .checkout-modal p {
   margin: 10px 0;
-  color: #333; /* Dark text for visibility */
+  color: #333;
 }
 
 .checkout-modal button {
@@ -331,7 +356,10 @@ h2 {
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  color: #333; /* Ensure text is visible */
+  color: #333;
+  background-image: url('honeycomb-pattern.png'); /* Add a honeycomb pattern */
+  background-size: cover;
+  background-blend-mode: overlay;
 }
 
 .live-chat h3 {
@@ -342,7 +370,7 @@ h2 {
 
 .live-chat p {
   margin: 10px 0;
-  color: #333; /* Dark text for visibility */
+  color: #333;
 }
 
 .live-chat textarea {

@@ -36,11 +36,12 @@ const Marketplace = () => {
   };
 
   const handleFileChange = (e) => {
-    if (e.target.files[0] && e.target.files[0].size <= 5 * 1024 * 1024) {
-      setFile(e.target.files[0]);
-      console.log('File selected:', e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    if (selectedFile && selectedFile.size <= 5 * 1024 * 1024) { // 5MB limit
+      setFile(selectedFile);
+      console.log('File selected:', selectedFile);
     } else {
-      alert('Please select a file less than 5MB');
+      alert('Please select a file less than 5MB.');
     }
   };
 
@@ -59,6 +60,26 @@ const Marketplace = () => {
       return;
     }
 
+    // Step 1: Upload the file to Supabase Storage
+    const filePath = `marketplace/${Date.now()}-${file.name}`;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('marketplace_Images') // Your bucket name
+      .upload(filePath, file);
+
+    if (uploadError) {
+      console.error('Error uploading image:', uploadError);
+      alert('Failed to upload image. Please try again.');
+      return;
+    }
+
+    // Step 2: Get the public URL of the uploaded file
+    const { data: urlData } = supabase.storage
+      .from('marketplace_Images')
+      .getPublicUrl(filePath);
+
+    const imageUrl = urlData.publicUrl;
+
+    // Step 3: Add the product to the database with the image URL
     const newProduct = {
       productName,
       description,
@@ -68,11 +89,11 @@ const Marketplace = () => {
       price: parseFloat(price),
       tier: sellerTier,
       location: locationQuery,
-      file: URL.createObjectURL(file),
-      owner_id, // Include the owner_id
+      file: imageUrl, // Use the public URL from Supabase Storage
+      owner_id,
     };
 
-    console.log('Adding product:', newProduct); // Log the payload
+    console.log('Adding product:', newProduct);
 
     const { data, error } = await supabase
       .from('products')

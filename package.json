@@ -12,14 +12,21 @@
     "clean-build": "npm cache clean --force && rmdir /s /q node_modules build && del package-lock.json && npm install && npm run build"
   },
   "dependencies": {
+    "@cloudinary/react": "^1.13.1",
+    "@cloudinary/url-gen": "^1.21.0",
     "@supabase/postgrest-js": "^1.17.9",
-    "@supabase/supabase-js": "^2.47.10",
+    "@supabase/supabase-js": "^2.47.12",
+    "@svgr/plugin-svgo": "^8.1.0",
+    "@svgr/webpack": "^8.1.0",
     "core-js-pure": "^3.40.0",
     "html-webpack-plugin": "^5.6.3",
+    "postcss": "^8.4.49",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.1",
     "react-scripts": "^5.0.1",
+    "resolve-url-loader": "^5.0.0",
+    "svgo": "^3.3.2",
     "web-vitals": "^4.2.4"
   },
   "devDependencies": {
