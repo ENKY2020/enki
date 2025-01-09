@@ -60,24 +60,24 @@ const HomePage = () => {
             <h2>Where would you like to go?</h2>
             <ul>
               <li>
-                <Link to="/services" onClick={toggleModal}>
+                <a href="/services" onClick={toggleModal}>
                   Explore Services
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/marketplace" onClick={toggleModal}>
+                <a href="/marketplace" onClick={toggleModal}>
                   View Marketplace
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/learninghub" onClick={toggleModal}>
+                <a href="/learninghub" onClick={toggleModal}>
                   Start Learning
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/connecthive" onClick={toggleModal}>
+                <a href="/connecthive" onClick={toggleModal}>
                   ConnectHive
-                </Link>
+                </a>
               </li>
             </ul>
             <button className="close-modal" onClick={toggleModal}>
