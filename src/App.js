@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { Cloudinary } from '@cloudinary/url-gen';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
 import HomePage from './pages/HomePage.jsx';
@@ -14,15 +13,6 @@ import AdminDashboard from './pages/AdminDashboard.jsx';
 import LearningHub from './pages/LearningHub.jsx';
 import './styles/main.css';
 
-// Initialize Cloudinary using environment variables
-const cld = new Cloudinary({
-  cloud: {
-    cloudName: process.env.REACT_APP_CLOUDINARY_CLOUD_NAME,
-    apiKey: process.env.REACT_APP_CLOUDINARY_API_KEY,
-    apiSecret: process.env.REACT_APP_CLOUDINARY_API_SECRET,
-  },
-});
-
 function App() {
   return (
     <Router>
@@ -31,10 +21,7 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route
-              path="/marketplace"
-              element={<Marketplace cld={cld} />} // Pass Cloudinary instance to Marketplace
-            />
+            <Route path="/marketplace" element={<Marketplace />} /> {/* Removed Cloudinary prop */}
             <Route path="/services" element={<Services />} />
             <Route path="/podcast" element={<Podcast />} />
             <Route path="/learninghub" element={<LearningHub />} />

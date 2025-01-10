@@ -52,7 +52,7 @@ const Marketplace = () => {
     }
 
     // Get the current user's ID
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
     const owner_id = user?.id;
 
     if (!owner_id) {
@@ -61,20 +61,20 @@ const Marketplace = () => {
     }
 
     // Step 1: Upload the file to Supabase Storage
-    const filePath = `marketplace/${Date.now()}-${file.name}`;
+    const filePath = `marketplace/${user.id}/${Date.now()}-${file.name}`;
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('marketplace_Images') // Your bucket name
+      .from('marketplace_images') // Your bucket name
       .upload(filePath, file);
 
     if (uploadError) {
       console.error('Error uploading image:', uploadError);
-      alert('Failed to upload image. Please try again.');
+      alert(`Failed to upload image: ${uploadError.message}`);
       return;
     }
 
     // Step 2: Get the public URL of the uploaded file
     const { data: urlData } = supabase.storage
-      .from('marketplace_Images')
+      .from('marketplace_images')
       .getPublicUrl(filePath);
 
     const imageUrl = urlData.publicUrl;
@@ -95,33 +95,61 @@ const Marketplace = () => {
 
     console.log('Adding product:', newProduct);
 
-    const { data, error } = await supabase
+    const { data: productData, error: productError } = await supabase
       .from('products')
-      .insert([newProduct]);
+      .insert([newProduct])
+      .select(); // Add .select() to return the inserted data
 
-    if (error) {
-      console.error('Error adding product:', error);
-      alert(`Failed to add product: ${error.message}`);
+    if (productError) {
+      console.error('Error adding product:', productError);
+      alert(`Failed to add product: ${productError.message}`);
+      return;
+    }
+
+    // Ensure productData is not null or undefined
+    if (!productData || productData.length === 0) {
+      console.error('Error: No product data returned after insertion.');
+      alert('Failed to add product: No data returned.');
+      return;
+    }
+
+    // Step 4: Add the image metadata to the `marketplace_images` table
+    const { data: imageData, error: imageError } = await supabase
+      .from('marketplace_images')
+      .insert([
+        {
+          file_path: filePath,
+          owner_id: user.id,
+          product_id: productData[0].id, // Link to the newly created product
+          public_url: imageUrl,
+        },
+      ]);
+
+    if (imageError) {
+      console.error('Error adding image metadata:', imageError);
+      alert(`Failed to add image metadata: ${imageError.message}`);
     } else {
-      console.log('Product added successfully:', data);
-      setProductList([...productList, newProduct]);
-      setProductName('');
-      setDescription('');
-      setCategory('');
-      setSubCategory('');
-      setCondition('');
-      setPrice('');
-      setFile(null);
-      setShowSellerForm(false);
+      console.log('Image metadata added successfully:', imageData);
+    }
 
-      // Scroll to the relevant section based on the seller's tier
-      if (sellerTier === 'Gold') {
-        window.scrollTo(0, document.querySelector('.featured').offsetTop);
-      } else if (sellerTier === 'Premium') {
-        window.scrollTo(0, document.querySelector('.new-arrivals').offsetTop);
-      } else {
-        window.scrollTo(0, document.querySelector('.top-sales').offsetTop);
-      }
+    // Update the product list
+    setProductList([...productList, newProduct]);
+    setProductName('');
+    setDescription('');
+    setCategory('');
+    setSubCategory('');
+    setCondition('');
+    setPrice('');
+    setFile(null);
+    setShowSellerForm(false);
+
+    // Scroll to the relevant section based on the seller's tier
+    if (sellerTier === 'Gold') {
+      window.scrollTo(0, document.querySelector('.featured').offsetTop);
+    } else if (sellerTier === 'Premium') {
+      window.scrollTo(0, document.querySelector('.new-arrivals').offsetTop);
+    } else {
+      window.scrollTo(0, document.querySelector('.top-sales').offsetTop);
     }
   };
 
