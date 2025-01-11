@@ -8,7 +8,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "postinstall": "npm install",
+    "postinstall": "echo 'Post-install script completed'", 
     "clean-build": "npm cache clean --force && rmdir /s /q node_modules build && del package-lock.json && npm install && npm run build"
   },
   "dependencies": {
