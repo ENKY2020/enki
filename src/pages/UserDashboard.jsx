@@ -1,25 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import supabase from '../supabaseClient.js';
-import '../styles/adminDashboard.css';
+import supabase from '../supabaseClient';
+import '../styles/userDashboard.css';
 
-const AdminDashboard = () => {
-  const [allProducts, setAllProducts] = useState([]);
+const UserDashboard = () => {
+  const [userProducts, setUserProducts] = useState([]);
 
-  // Fetch all products on component mount
+  // Fetch user's products on component mount
   useEffect(() => {
-    fetchAllProducts();
+    fetchUserProducts();
   }, []);
 
-  // Fetch all products from the database
-  const fetchAllProducts = async () => {
+  // Fetch products owned by the current user
+  const fetchUserProducts = async () => {
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError) {
+      console.error('Error fetching user:', authError);
+      return;
+    }
+
     const { data, error } = await supabase
       .from('products_table')
-      .select('*');
+      .select('*')
+      .eq('owner_id', user.id);
 
     if (error) {
       console.error('Error fetching products:', error);
     } else {
-      setAllProducts(data);
+      setUserProducts(data);
     }
   };
 
@@ -34,30 +41,29 @@ const AdminDashboard = () => {
       console.error('Error deleting product:', error);
     } else {
       // Refresh the product list
-      fetchAllProducts();
+      fetchUserProducts();
     }
   };
 
   return (
-    <div className="admin-dashboard">
-      <h2>Admin Dashboard</h2>
-      {allProducts.length > 0 ? (
+    <div className="user-dashboard">
+      <h2>Your Listings</h2>
+      {userProducts.length > 0 ? (
         <ul>
-          {allProducts.map((product) => (
+          {userProducts.map((product) => (
             <li key={product.id}>
               <h3>{product.productName}</h3>
               <p>{product.description}</p>
               <p>{product.price} KES</p>
-              <p>Owner: {product.owner_id}</p>
               <button onClick={() => handleDeleteProduct(product.id)}>Delete</button>
             </li>
           ))}
         </ul>
       ) : (
-        <p>No products listed yet.</p>
+        <p>You have no listings yet.</p>
       )}
     </div>
   );
 };
 
-export default AdminDashboard;
+export default UserDashboard;

@@ -1,0 +1,44 @@
+/* UserDashboard Styles */
+.user-dashboard {
+    padding: 20px;
+  }
+  
+  .user-dashboard h2 {
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+  }
+  
+  .user-dashboard ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .user-dashboard li {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .user-dashboard li h3 {
+    margin: 0;
+    color: var(--secondary-color);
+  }
+  
+  .user-dashboard li p {
+    margin: 5px 0;
+    color: var(--text-color);
+  }
+  
+  .user-dashboard li button {
+    background-color: #dc3545; /* Red for delete button */
+    color: white;
+  }
+  
+  .user-dashboard li button:hover {
+    background-color: #c82333; /* Darker red */
+  }
