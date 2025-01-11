@@ -1,9 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/connecthive.css';
+import supabase from '../supabaseClient'; // Ensure this path is correct
+
+// Define the uploadImage function using Supabase Storage
+const uploadImage = async (file, userId, imageType) => {
+  const filePath = `${userId}/${imageType}/${file.name}`;
+
+  // Upload the file to Supabase Storage
+  const { data, error } = await supabase.storage
+    .from('images')
+    .upload(filePath, file);
+
+  if (error) {
+    console.error('Error uploading image:', error);
+    return null;
+  }
+
+  // Get the public URL of the uploaded file
+  const { data: publicUrl } = supabase.storage
+    .from('images')
+    .getPublicUrl(filePath);
+
+  return publicUrl.publicUrl;
+};
 
 const ConnectHive = () => {
   const [showProfilePopup, setShowProfilePopup] = useState(true);
-  const [profile, setProfile] = useState({ followers: 0, premium: false });
+  const [profile, setProfile] = useState({
+    id: '', // Ensure this is set when the user logs in
+    username: '',
+    profilePicture: '',
+    coverPhoto: '',
+    bio: '',
+    skills: '',
+    followers: 0,
+    premium: false,
+  });
   const [gigs, setGigs] = useState([]);
   const [newGig, setNewGig] = useState({
     title: '',
@@ -27,121 +59,258 @@ const ConnectHive = () => {
   });
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Fetch profile data on component mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', profile.id)
+          .single();
+
+        if (data) {
+          setProfile(data);
+          setShowProfilePopup(false); // Hide the profile popup if profile exists
+        } else {
+          setShowProfilePopup(true); // Show the popup if no profile exists
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+
+    if (profile.id) {
+      fetchProfile();
+    }
+  }, [profile.id]);
+
   // Handle file upload for profile picture and cover photo
-  const handleFileUpload = (e, field) => {
+  const handleFileUpload = async (e, field) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
+      const imageUrl = await uploadImage(file, profile.id, field);
+      if (imageUrl) {
         setProfile((prevProfile) => ({
           ...prevProfile,
-          [field]: reader.result,
+          [field]: imageUrl,
         }));
-      };
-      reader.readAsDataURL(file);
+      }
     }
   };
 
   // Save profile and close popup
-  const handleSaveProfile = () => {
-    if (!profile?.profilePicture || !profile?.coverPhoto || !profile?.bio || !profile?.skills) {
+  const handleSaveProfile = async () => {
+    if (
+      !profile.username ||
+      !profile.profilePicture ||
+      !profile.coverPhoto ||
+      !profile.bio ||
+      !profile.skills
+    ) {
       alert('Please fill out all fields before saving.');
       return;
     }
-    setShowProfilePopup(false);
-    alert('Profile saved successfully!');
+
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .upsert([
+          {
+            id: profile.id,
+            username: profile.username,
+            profile_picture: profile.profilePicture,
+            cover_photo: profile.coverPhoto,
+            bio: profile.bio,
+            skills: profile.skills,
+          },
+        ]);
+
+      if (error) {
+        console.error('Error saving profile:', error);
+        alert('Failed to save profile. Please try again.');
+      } else {
+        setShowProfilePopup(false);
+        alert('Profile saved successfully!');
+      }
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      alert('An error occurred while saving the profile.');
+    }
   };
 
   // Handle gig file upload
-  const handleGigFileUpload = (e) => {
+  const handleGigFileUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewGig({ ...newGig, mediaUrl: reader.result });
-      };
-      reader.readAsDataURL(file);
+      const imageUrl = await uploadImage(file, profile.id, 'gig_media');
+      if (imageUrl) {
+        setNewGig({ ...newGig, mediaUrl: imageUrl });
+      }
     }
   };
 
   // Add a new gig
-  const handleAddGig = () => {
-    if (!profile) {
+  const handleAddGig = async () => {
+    if (!profile.id) {
       alert('Please create a profile first.');
       return;
     }
-    setGigs([...gigs, { ...newGig, id: gigs.length + 1, author: profile.profilePicture, username: profile.username }]);
-    setNewGig({ title: '', description: '', category: '', location: '', mediaUrl: '', likes: 0, rating: 0 });
+
+    const { data, error } = await supabase
+      .from('gigs')
+      .insert([
+        {
+          user_id: profile.id,
+          title: newGig.title,
+          description: newGig.description,
+          category: newGig.category,
+          location: newGig.location,
+          media_url: newGig.mediaUrl,
+          likes_count: newGig.likes,
+          rating: newGig.rating,
+        },
+      ]);
+
+    if (error) {
+      console.error('Error adding gig:', error);
+    } else {
+      setGigs([...gigs, { ...newGig, id: data[0].id, author: profile.profilePicture, username: profile.username }]);
+      setNewGig({ title: '', description: '', category: '', location: '', mediaUrl: '', likes: 0, rating: 0 });
+    }
   };
 
   // Handle post file upload
-  const handlePostFileUpload = (e) => {
+  const handlePostFileUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewPost({ ...newPost, mediaUrl: reader.result });
-      };
-      reader.readAsDataURL(file);
+      const imageUrl = await uploadImage(file, profile.id, 'post_media');
+      if (imageUrl) {
+        setNewPost({ ...newPost, mediaUrl: imageUrl });
+      }
     }
   };
 
   // Add a new post
-  const handleAddPost = () => {
-    if (!profile) {
+  const handleAddPost = async () => {
+    if (!profile.id) {
       alert('Please create a profile first.');
       return;
     }
-    setPosts([...posts, { ...newPost, id: posts.length + 1, author: profile.profilePicture, username: profile.username }]);
-    setNewPost({ title: '', content: '', mediaUrl: '', likes: 0, vibes: 0, cringes: 0, comments: [], shares: 0 });
+
+    const { data, error } = await supabase
+      .from('posts')
+      .insert([
+        {
+          user_id: profile.id,
+          title: newPost.title,
+          content: newPost.content,
+          media_url: newPost.mediaUrl,
+          likes_count: newPost.likes,
+          vibes_count: newPost.vibes,
+          cringes_count: newPost.cringes,
+          comments: newPost.comments,
+          shares_count: newPost.shares,
+        },
+      ]);
+
+    if (error) {
+      console.error('Error adding post:', error);
+    } else {
+      setPosts([...posts, { ...newPost, id: data[0].id, author: profile.profilePicture, username: profile.username }]);
+      setNewPost({ title: '', content: '', mediaUrl: '', likes: 0, vibes: 0, cringes: 0, comments: [], shares: 0 });
+    }
   };
 
   // Handle likes for posts and gigs
-  const handleLike = (id, type) => {
-    if (type === 'post') {
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === id ? { ...post, likes: post.likes + 1 } : post
-        )
-      );
-    } else if (type === 'gig') {
-      setGigs((prevGigs) =>
-        prevGigs.map((gig) =>
-          gig.id === id ? { ...gig, likes: gig.likes + 1 } : gig
-        )
-      );
+  const handleLike = async (id, type) => {
+    const table = type === 'post' ? 'posts' : 'gigs';
+    const { data, error } = await supabase
+      .from(table)
+      .update({ likes_count: supabase.raw('likes_count + 1') })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating likes:', error);
+    } else {
+      if (type === 'post') {
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.id === id ? { ...post, likes: post.likes + 1 } : post
+          )
+        );
+      } else if (type === 'gig') {
+        setGigs((prevGigs) =>
+          prevGigs.map((gig) =>
+            gig.id === id ? { ...gig, likes: gig.likes + 1 } : gig
+          )
+        );
+      }
     }
   };
 
   // Handle vibes and cringes for posts
-  const handleVibe = (id, type) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === id ? { ...post, [type]: post[type] + 1 } : post
-      )
-    );
+  const handleVibe = async (id, type) => {
+    const { data, error } = await supabase
+      .from('posts')
+      .update({ [type]: supabase.raw(`${type} + 1`) })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating vibes/cringes:', error);
+    } else {
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === id ? { ...post, [type]: post[type] + 1 } : post
+        )
+      );
+    }
   };
 
   // Handle comments for posts
-  const handleAddComment = (id, comment) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === id ? { ...post, comments: [...post.comments, comment] } : post
-      )
-    );
+  const handleAddComment = async (id, comment) => {
+    const { data, error } = await supabase
+      .from('posts')
+      .update({ comments: supabase.raw('array_append(comments, ?)', [comment]) })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error adding comment:', error);
+    } else {
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === id ? { ...post, comments: [...post.comments, comment] } : post
+        )
+      );
+    }
   };
 
   // Handle sharing posts
   const handleShare = (post) => {
-    if (navigator.share) {
-      navigator.share({
-        title: post.title,
-        text: post.content,
-        url: window.location.href,
-      });
-    } else {
-      alert("Sharing is not supported in your browser.");
-    }
+    const shareUrl = `https://yourwebsite.com/post/${post.id}`;
+    const shareText = `Check out this post: ${post.title}\n${post.content}`;
+
+    // Facebook Share
+    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+
+    // Twitter Share
+    const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+
+    // WhatsApp Share
+    const whatsappShareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
+
+    // WhatsApp Business Share
+    const whatsappBusinessShareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}&phone=YOUR_BUSINESS_NUMBER`;
+
+    // Instagram Share (Note: Instagram doesn't support direct sharing via URL)
+    const instagramShareUrl = `https://www.instagram.com/`;
+
+    // Open share links in new tabs
+    window.open(facebookShareUrl, '_blank');
+    window.open(twitterShareUrl, '_blank');
+    window.open(whatsappShareUrl, '_blank');
+    window.open(whatsappBusinessShareUrl, '_blank');
+    window.open(instagramShareUrl, '_blank');
   };
 
   // Handle following a user
@@ -198,7 +367,7 @@ const ConnectHive = () => {
                 onChange={(e) => handleFileUpload(e, 'coverPhoto')}
                 accept="image/*"
               />
-              {profile?.coverPhoto && <img src={profile.coverPhoto} alt="Cover" />}
+              {profile?.coverPhoto && <img src={profile.coverPhoto} alt="Cover Preview" className="image-preview" />}
             </div>
             <div className="profile-picture">
               <label htmlFor="profilePicture">Upload Profile Picture (Circle)</label>
@@ -208,7 +377,7 @@ const ConnectHive = () => {
                 onChange={(e) => handleFileUpload(e, 'profilePicture')}
                 accept="image/*"
               />
-              {profile?.profilePicture && <img src={profile.profilePicture} alt="Profile" />}
+              {profile?.profilePicture && <img src={profile.profilePicture} alt="Profile Preview" className="image-preview" />}
             </div>
             <textarea
               placeholder="About Yourself"
@@ -282,8 +451,9 @@ const ConnectHive = () => {
                   <button className="bee-button" onClick={() => handleLike(gig.id, 'gig')}>
                     🐝 Like ({gig.likes})
                   </button>
-                 
-                  <button className="bee-button">🐝 Share</button>
+                  <button className="bee-button" onClick={() => handleShare(gig)}>
+                    🐝 Share
+                  </button>
                 </div>
               </div>
             ))}

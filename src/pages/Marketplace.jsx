@@ -21,30 +21,32 @@ const Marketplace = () => {
   const [showChat, setShowChat] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
 
+  // Fetch products on component mount
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  // Fetch products from the database
   const fetchProducts = async () => {
-    const { data, error } = await supabase.from('products').select('*');
+    const { data, error } = await supabase.from('products_table').select('*');
     if (error) {
       console.error('Error fetching products:', error);
     } else {
-      console.log('Fetched products:', data);
       setProductList(data);
     }
   };
 
+  // Handle file selection
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile && selectedFile.size <= 5 * 1024 * 1024) { // 5MB limit
       setFile(selectedFile);
-      console.log('File selected:', selectedFile);
     } else {
       alert('Please select a file less than 5MB.');
     }
   };
 
+  // Add a new product
   const handleAddProduct = async () => {
     if (!productName || !description || !category || !condition || !price || !file) {
       alert('Please fill all the fields');
@@ -60,114 +62,109 @@ const Marketplace = () => {
       return;
     }
 
-    // Step 1: Upload the file to Supabase Storage
-    const filePath = `marketplace/${user.id}/${Date.now()}-${file.name}`;
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('marketplace_images') // Your bucket name
-      .upload(filePath, file);
+    try {
+      // Step 1: Upload the file to Supabase Storage
+      const filePath = `marketplace/${user.id}/${Date.now()}-${file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('marketplace_images')
+        .upload(filePath, file);
 
-    if (uploadError) {
-      console.error('Error uploading image:', uploadError);
-      alert(`Failed to upload image: ${uploadError.message}`);
-      return;
-    }
+      if (uploadError) {
+        throw uploadError;
+      }
 
-    // Step 2: Get the public URL of the uploaded file
-    const { data: urlData } = supabase.storage
-      .from('marketplace_images')
-      .getPublicUrl(filePath);
+      // Step 2: Get the public URL of the uploaded file
+      const { data: urlData } = supabase.storage
+        .from('marketplace_images')
+        .getPublicUrl(filePath);
 
-    const imageUrl = urlData.publicUrl;
+      const imageUrl = urlData.publicUrl;
 
-    // Step 3: Add the product to the database with the image URL
-    const newProduct = {
-      productName,
-      description,
-      category,
-      subCategory,
-      condition,
-      price: parseFloat(price),
-      tier: sellerTier,
-      location: locationQuery,
-      file: imageUrl, // Use the public URL from Supabase Storage
-      owner_id,
-    };
+      // Step 3: Add the product to the database with the image URL and owner_id
+      const newProduct = {
+        productName,
+        description,
+        category,
+        subCategory,
+        condition,
+        price: parseFloat(price),
+        tier: sellerTier,
+        location: locationQuery,
+        file: imageUrl,
+        owner_id,
+      };
 
-    console.log('Adding product:', newProduct);
+      const { data: productData, error: productError } = await supabase
+        .from('products_table')
+        .insert([newProduct])
+        .select();
 
-    const { data: productData, error: productError } = await supabase
-      .from('products')
-      .insert([newProduct])
-      .select(); // Add .select() to return the inserted data
+      if (productError) {
+        throw productError;
+      }
 
-    if (productError) {
-      console.error('Error adding product:', productError);
-      alert(`Failed to add product: ${productError.message}`);
-      return;
-    }
+      // Step 4: Add the image metadata to the `marketplace_images` table
+      const { error: imageError } = await supabase
+        .from('marketplace_images')
+        .insert([
+          {
+            file_path: filePath,
+            owner_id: user.id,
+            product_id: productData[0].id,
+            public_url: imageUrl,
+          },
+        ]);
 
-    // Ensure productData is not null or undefined
-    if (!productData || productData.length === 0) {
-      console.error('Error: No product data returned after insertion.');
-      alert('Failed to add product: No data returned.');
-      return;
-    }
+      if (imageError) {
+        throw imageError;
+      }
 
-    // Step 4: Add the image metadata to the `marketplace_images` table
-    const { data: imageData, error: imageError } = await supabase
-      .from('marketplace_images')
-      .insert([
-        {
-          file_path: filePath,
-          owner_id: user.id,
-          product_id: productData[0].id, // Link to the newly created product
-          public_url: imageUrl,
-        },
-      ]);
+      // Step 5: Update the product list in real-time
+      setProductList([...productList, productData[0]]);
 
-    if (imageError) {
-      console.error('Error adding image metadata:', imageError);
-      alert(`Failed to add image metadata: ${imageError.message}`);
-    } else {
-      console.log('Image metadata added successfully:', imageData);
-    }
+      // Step 6: Reset the form fields
+      setProductName('');
+      setDescription('');
+      setCategory('');
+      setSubCategory('');
+      setCondition('');
+      setPrice('');
+      setFile(null);
+      setShowSellerForm(false);
 
-    // Update the product list
-    setProductList([...productList, newProduct]);
-    setProductName('');
-    setDescription('');
-    setCategory('');
-    setSubCategory('');
-    setCondition('');
-    setPrice('');
-    setFile(null);
-    setShowSellerForm(false);
-
-    // Scroll to the relevant section based on the seller's tier
-    if (sellerTier === 'Gold') {
-      window.scrollTo(0, document.querySelector('.featured').offsetTop);
-    } else if (sellerTier === 'Premium') {
-      window.scrollTo(0, document.querySelector('.new-arrivals').offsetTop);
-    } else {
-      window.scrollTo(0, document.querySelector('.top-sales').offsetTop);
+      // Step 7: Scroll to the relevant section based on the seller's tier
+      const section = sellerTier === 'Gold' ? '.featured' : sellerTier === 'Premium' ? '.new-arrivals' : '.top-sales';
+      const element = document.querySelector(section);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        console.error(`Element with selector '${section}' not found.`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert(`An error occurred: ${error.message}`);
     }
   };
 
+  // Handle "Buy Now" button click
   const handleBuyNow = (product) => {
     setSelectedProduct(product);
     setShowCheckout(true);
   };
 
+  // Handle payment confirmation
   const handlePaymentConfirmation = () => {
     setShowChat(true);
-    setShowCheckout(false); // Close the checkout modal
+    setShowCheckout(false);
   };
 
+  // Close the live chat modal
   const handleCloseChat = () => {
-    setShowChat(false); // Close the live chat modal
-    setChatMessage(''); // Clear the chat message
+    setShowChat(false);
+    setChatMessage('');
   };
 
+  // Send a chat message
   const handleSendMessage = () => {
     if (chatMessage.trim()) {
       console.log('Message sent:', chatMessage);
@@ -178,6 +175,7 @@ const Marketplace = () => {
     }
   };
 
+  // Filter products based on search, price range, and location
   const filteredProducts = productList.filter((product) => {
     const matchesSearch = product.productName.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesPriceRange = priceRange ? product.price <= parseInt(priceRange) : true;
@@ -185,6 +183,7 @@ const Marketplace = () => {
     return matchesSearch && matchesPriceRange && matchesLocation;
   });
 
+  // Categorize products by tier
   const featuredProducts = productList.filter((product) => product.tier === 'Gold');
   const newArrivals = productList.filter((product) => product.tier === 'Premium');
   const topSales = productList.filter((product) => product.tier === 'Regular');
@@ -199,7 +198,14 @@ const Marketplace = () => {
       </div>
 
       <div className="shop-buttons">
-        <button className="shop-btn" onClick={() => window.scrollTo(0, document.querySelector('.product-sections').offsetTop)}>
+        <button className="shop-btn" onClick={() => {
+          const element = document.querySelector('.product-sections');
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          } else {
+            console.error('Element with selector .product-sections not found.');
+          }
+        }}>
           Shop From Us
         </button>
         <button className="shop-btn" onClick={() => setShowSellerForm(!showSellerForm)}>
